@@ -1,6 +1,7 @@
 package com.frank.authservice.controllers;
 
 import com.frank.authservice.common.constants.ApiPAthConstants;
+import com.frank.authservice.common.dtos.LoginRequest;
 import com.frank.authservice.common.dtos.TokenResponse;
 import com.frank.authservice.common.dtos.UserRequest;
 import jakarta.validation.Valid;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 public interface AuthApi {
     @PostMapping(value = "/register")
     ResponseEntity<TokenResponse> createUser(@RequestBody @Valid UserRequest userRequest);
+
+    @PostMapping("/login")
+    ResponseEntity<TokenResponse> loginUser(@RequestBody @Valid LoginRequest loginRequest);
 
     @GetMapping
     ResponseEntity<String> getUser(@RequestAttribute(name = "X-User-Id") String userId);

@@ -1,5 +1,6 @@
 package com.frank.authservice.controllers.impl;
 
+import com.frank.authservice.common.dtos.LoginRequest;
 import com.frank.authservice.common.dtos.TokenResponse;
 import com.frank.authservice.common.dtos.UserRequest;
 import com.frank.authservice.controllers.AuthApi;
@@ -19,6 +20,11 @@ public class AuthController implements AuthApi {
     @Override
     public ResponseEntity<TokenResponse> createUser(UserRequest userRequest) {
         return ResponseEntity.ok(authService.createUser(userRequest));
+    }
+
+    @Override
+    public ResponseEntity<TokenResponse> loginUser(LoginRequest loginRequest) {
+        return ResponseEntity.ok(this.authService.loginUser(loginRequest));
     }
 
     @Override
