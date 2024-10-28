@@ -1,11 +1,15 @@
 package com.frank.authservice.services.impl;
 
+import com.frank.authservice.common.dtos.LoginRequest;
 import com.frank.authservice.common.dtos.TokenResponse;
 import com.frank.authservice.common.dtos.UserRequest;
 import com.frank.authservice.common.entities.UserModel;
 import com.frank.authservice.repositories.UserRepository;
 import com.frank.authservice.services.AuthService;
 import com.frank.authservice.services.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,14 +18,18 @@ import java.util.Optional;
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(UserRepository userRepository, JwtService jwtService) {
+    @Autowired
+    public AuthServiceImpl(UserRepository userRepository, JwtService jwtService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public TokenResponse createUser(UserRequest userRequest) {
+        //String encodePassword = passwordEncoder.
         return Optional.of(userRequest)
                 .map(this::mapToEntity)
                 .map(userRepository::save)
@@ -29,10 +37,22 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new RuntimeException("Error creating user!"));
     }
 
+    @Override
+    public TokenResponse loginUser(LoginRequest loginRequest) {
+        UserModel user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+
+        if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+           throw new BadCredentialsException("Invalid email or password");
+        }
+
+        return this.jwtService.generateToken(user.getId());
+    }
+
     private UserModel mapToEntity(UserRequest userRequest) {
         return UserModel.builder()
                 .email(userRequest.getEmail())
-                .password(userRequest.getPassword())
+                .password(this.passwordEncoder.encode(userRequest.getPassword()))
                 .role("USER")
                 .build();
     }
