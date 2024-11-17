@@ -39,14 +39,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenResponse loginUser(LoginRequest loginRequest) {
-        UserModel user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
-
-        if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-           throw new BadCredentialsException("Invalid email or password");
-        }
-
-        return this.jwtService.generateToken(user.getId());
+        return userRepository.findByEmail(loginRequest.getEmail())
+        .filter(user -> passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
+        .map(user -> jwtService.generateToken(user.getId()))
+        .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));      
     }
 
     private UserModel mapToEntity(UserRequest userRequest) {

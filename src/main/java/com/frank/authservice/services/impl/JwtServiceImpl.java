@@ -22,7 +22,6 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public TokenResponse generateToken(Long userId) {
         Date experationDate = new Date(Long.MAX_VALUE);
-
         String token = Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .setIssuedAt(new Date(System.currentTimeMillis()))

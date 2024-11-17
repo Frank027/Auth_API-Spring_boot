@@ -13,7 +13,7 @@ public interface AuthApi {
     @PostMapping(value = "/register")
     ResponseEntity<TokenResponse> createUser(@RequestBody @Valid UserRequest userRequest);
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login")
     ResponseEntity<TokenResponse> loginUser(@RequestBody @Valid LoginRequest loginRequest);
 
     @GetMapping

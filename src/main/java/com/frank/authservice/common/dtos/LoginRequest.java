@@ -11,5 +11,6 @@ import lombok.*;
 public class LoginRequest {
     @NotNull
     private String email;
+    @NonNull
     private String password;
 }
